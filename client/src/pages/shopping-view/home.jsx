@@ -1,7 +1,4 @@
 import { Button } from "@/components/ui/button";
-import bannerOne from "../../assets/banner-1.webp";
-import bannerTwo from "../../assets/banner-2.webp";
-import bannerThree from "../../assets/banner-3.webp";
 import {
   Airplay,
   BabyIcon,
@@ -52,7 +49,7 @@ function ShoppingHome() {
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
-  const { featureImageList } = useSelector((state) => state.commonFeature);
+  const { featureImageList = [] } = useSelector((state) => state.commonFeature || {});
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
@@ -126,7 +123,7 @@ function ShoppingHome() {
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (
               <img
-                src={slide?.image}
+                src={`http://localhost:5000${slide?.image}`}
                 key={index}
                 className={`${
                   index === currentSlide ? "opacity-100" : "opacity-0"
@@ -169,6 +166,7 @@ function ShoppingHome() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {categoriesWithIcon.map((categoryItem) => (
               <Card
+                key={categoryItem.id}
                 onClick={() =>
                   handleNavigateToListingPage(categoryItem, "category")
                 }
@@ -190,6 +188,7 @@ function ShoppingHome() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {brandsWithIcon.map((brandItem) => (
               <Card
+                key={brandItem.id}
                 onClick={() => handleNavigateToListingPage(brandItem, "brand")}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
               >
@@ -212,6 +211,7 @@ function ShoppingHome() {
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile
+                    key={productItem._id}
                     handleGetProductDetails={handleGetProductDetails}
                     product={productItem}
                     handleAddtoCart={handleAddtoCart}

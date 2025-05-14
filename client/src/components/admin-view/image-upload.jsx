@@ -15,17 +15,19 @@ function ProductImageUpload({
   setImageLoadingState,
   isEditMode,
   isCustomStyling = false,
+  onFileChange,
 }) {
   const inputRef = useRef(null);
 
   console.log(isEditMode, "isEditMode");
 
   function handleImageFileChange(event) {
-    console.log(event.target.files, "event.target.files");
     const selectedFile = event.target.files?.[0];
-    console.log(selectedFile);
-
-    if (selectedFile) setImageFile(selectedFile);
+    if (onFileChange) {
+      onFileChange(selectedFile);
+    } else if (selectedFile) {
+      setImageFile(selectedFile);
+    }
   }
 
   function handleDragOver(event) {
@@ -35,7 +37,11 @@ function ProductImageUpload({
   function handleDrop(event) {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile) setImageFile(droppedFile);
+    if (onFileChange) {
+      onFileChange(droppedFile);
+    } else if (droppedFile) {
+      setImageFile(droppedFile);
+    }
   }
 
   function handleRemoveImage() {
