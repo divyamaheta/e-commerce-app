@@ -21,7 +21,7 @@ const commonFeatureRouter = require("./routes/common/feature-routes");
 
 mongoose
   .connect("mongodb://localhost:27017/mern-ecommerce")
-  .then(() => console.log("MongoDB connected"))
+  .then(() => console.log("MongoDB Connected"))
   .catch((error) => console.log(error));
 
 const app = express();
@@ -61,4 +61,4 @@ app.use("/api/shop/review", shopReviewRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
 
-app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server Is Now Running On Port : ${PORT}`));
