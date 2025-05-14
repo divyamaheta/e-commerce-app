@@ -1,21 +1,31 @@
-const { imageUploadUtil } = require("../../helpers/cloudinary");
+const { handleFileUpload } = require("../../helpers/localStorage");
 const Product = require("../../models/Product");
 
 const handleImageUpload = async (req, res) => {
   try {
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    const url = "data:" + req.file.mimetype + ";base64," + b64;
-    const result = await imageUploadUtil(url);
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded"
+      });
+    }
 
+    console.log("Uploaded file:", req.file);
+
+    const imagePath = `/data/products/${req.file.filename}`;
+    
     res.json({
       success: true,
-      result,
+      result: {
+        url: imagePath
+      }
     });
   } catch (error) {
-    console.log(error);
-    res.json({
+    console.error("Error in handleImageUpload:", error);
+    res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while uploading image",
+      error: error.message
     });
   }
 };
@@ -58,7 +68,7 @@ const addProduct = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred",
     });
   }
 };

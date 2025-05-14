@@ -1,5 +1,6 @@
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
+import { getImageUrl } from "@/utils/imageUtils";
 
 function AdminProductTile({
   product,
@@ -13,7 +14,7 @@ function AdminProductTile({
       <div>
         <div className="relative">
           <img
-            src={product?.image}
+            src={getImageUrl(product?.image)}
             alt={product?.title}
             className="w-full h-[300px] object-cover rounded-t-lg"
           />
