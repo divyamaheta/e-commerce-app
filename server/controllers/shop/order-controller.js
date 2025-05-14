@@ -5,6 +5,7 @@ const Product = require("../../models/Product");
 
 const createOrder = async (req, res) => {
   try {
+    console.log("createOrder called", req.body);
     const {
       userId,
       cartItems,
@@ -19,6 +20,42 @@ const createOrder = async (req, res) => {
       payerId,
       cartId,
     } = req.body;
+
+    // If paymentMethod is 'dummy', skip PayPal logic and create order directly
+    if (paymentMethod === 'dummy') {
+      try {
+        const newlyCreatedOrder = new Order({
+          userId,
+          cartId,
+          cartItems,
+          addressInfo,
+          orderStatus,
+          paymentMethod,
+          paymentStatus,
+          totalAmount,
+          orderDate,
+          orderUpdateDate,
+          paymentId,
+          payerId,
+        });
+
+        await newlyCreatedOrder.save();
+        console.log('Dummy order saved:', newlyCreatedOrder);
+
+        return res.status(201).json({
+          success: true,
+          orderId: newlyCreatedOrder._id,
+          message: 'Dummy order created successfully',
+        });
+      } catch (err) {
+        console.error('Error saving dummy order:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to save dummy order',
+          error: err.message,
+        });
+      }
+    }
 
     const create_payment_json = {
       intent: "sale",

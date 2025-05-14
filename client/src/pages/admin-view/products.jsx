@@ -51,7 +51,10 @@ function AdminProducts() {
       ? dispatch(
           editProduct({
             id: currentEditedId,
-            formData,
+            formData: {
+              ...formData,
+              image: uploadedImageUrl || formData.image,
+            },
           })
         ).then((data) => {
           console.log(data, "edit");

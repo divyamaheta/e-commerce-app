@@ -5,8 +5,8 @@ import UserCartItemsContent from "@/components/shopping-view/cart-items-content"
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { createNewOrder } from "@/store/shop/order-slice";
-import { Navigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -16,6 +16,7 @@ function ShoppingCheckout() {
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   console.log(currentSelectedAddress, "cartItems");
 
@@ -32,13 +33,12 @@ function ShoppingCheckout() {
         )
       : 0;
 
-  function handleInitiatePaypalPayment() {
+  function handleDummyCheckout() {
     if (cartItems.length === 0) {
       toast({
         title: "Your cart is empty. Please add items to proceed",
         variant: "destructive",
       });
-
       return;
     }
     if (currentSelectedAddress === null) {
@@ -46,10 +46,8 @@ function ShoppingCheckout() {
         title: "Please select one address to proceed.",
         variant: "destructive",
       });
-
       return;
     }
-
     const orderData = {
       userId: user?.id,
       cartId: cartItems?._id,
@@ -72,19 +70,21 @@ function ShoppingCheckout() {
         notes: currentSelectedAddress?.notes,
       },
       orderStatus: "pending",
-      paymentMethod: "paypal",
-      paymentStatus: "pending",
+      paymentMethod: "dummy",
+      paymentStatus: "dummy-success",
       totalAmount: totalCartAmount,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
-      paymentId: "",
-      payerId: "",
+      paymentId: "dummy",
+      payerId: "dummy",
     };
-
     dispatch(createNewOrder(orderData)).then((data) => {
-      console.log(data, "sangam");
       if (data?.payload?.success) {
-        setIsPaymemntStart(true);
+        if (orderData.paymentMethod === "dummy") {
+          navigate("/shop/payment-success");
+        } else {
+          setIsPaymemntStart(true);
+        }
       } else {
         setIsPaymemntStart(false);
       }
@@ -108,7 +108,7 @@ function ShoppingCheckout() {
         <div className="flex flex-col gap-4">
           {cartItems && cartItems.items && cartItems.items.length > 0
             ? cartItems.items.map((item) => (
-                <UserCartItemsContent cartItem={item} />
+                <UserCartItemsContent cartItem={item} key={item.productId} />
               ))
             : null}
           <div className="mt-8 space-y-4">
@@ -118,10 +118,10 @@ function ShoppingCheckout() {
             </div>
           </div>
           <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
+            <Button onClick={handleDummyCheckout} className="w-full">
               {isPaymentStart
-                ? "Processing Paypal Payment..."
-                : "Checkout with Paypal"}
+                ? "Placing Order..."
+                : "Place Order (Dummy)"}
             </Button>
           </div>
         </div>
