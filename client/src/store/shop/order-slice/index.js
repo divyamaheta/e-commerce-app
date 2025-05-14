@@ -2,9 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
-  approvalURL: null,
   isLoading: false,
-  orderId: null,
   orderList: [],
   orderDetails: null,
 };
@@ -12,51 +10,49 @@ const initialState = {
 export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
   async (orderData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
-      orderData,
-      { withCredentials: true }
-    );
-
-    return response.data;
-  }
-);
-
-export const capturePayment = createAsyncThunk(
-  "/order/capturePayment",
-  async ({ paymentId, payerId, orderId }) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/capture",
-      {
-        paymentId,
-        payerId,
-        orderId,
-      }
-    );
-
-    return response.data;
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/shop/order/create",
+        orderData,
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating order:", error.response?.data || error.message);
+      throw error;
+    }
   }
 );
 
 export const getAllOrdersByUserId = createAsyncThunk(
   "/order/getAllOrdersByUserId",
   async (userId) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/list/${userId}`
-    );
-
-    return response.data;
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/shop/order/list/${userId}`,
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching orders:", error.response?.data || error.message);
+      throw error;
+    }
   }
 );
 
 export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/details/${id}`
-    );
-
-    return response.data;
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/shop/order/details/${id}`,
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching order details:", error.response?.data || error.message);
+      throw error;
+    }
   }
 );
 
@@ -73,19 +69,11 @@ const shoppingOrderSlice = createSlice({
       .addCase(createNewOrder.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createNewOrder.fulfilled, (state, action) => {
+      .addCase(createNewOrder.fulfilled, (state) => {
         state.isLoading = false;
-        state.approvalURL = action.payload.approvalURL;
-        state.orderId = action.payload.orderId;
-        sessionStorage.setItem(
-          "currentOrderId",
-          JSON.stringify(action.payload.orderId)
-        );
       })
       .addCase(createNewOrder.rejected, (state) => {
         state.isLoading = false;
-        state.approvalURL = null;
-        state.orderId = null;
       })
       .addCase(getAllOrdersByUserId.pending, (state) => {
         state.isLoading = true;

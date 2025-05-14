@@ -11,14 +11,10 @@ import { useNavigate } from "react-router-dom";
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
-  const { approvalURL } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
-  const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  console.log(currentSelectedAddress, "cartItems");
 
   const totalCartAmount =
     cartItems && cartItems.items && cartItems.items.length > 0
@@ -33,8 +29,8 @@ function ShoppingCheckout() {
         )
       : 0;
 
-  function handleDummyCheckout() {
-    if (cartItems.length === 0) {
+  function handlePlaceOrder() {
+    if (!cartItems?.items || cartItems.items.length === 0) {
       toast({
         title: "Your cart is empty. Please add items to proceed",
         variant: "destructive",
@@ -69,30 +65,18 @@ function ShoppingCheckout() {
         phone: currentSelectedAddress?.phone,
         notes: currentSelectedAddress?.notes,
       },
-      orderStatus: "pending",
-      paymentMethod: "dummy",
-      paymentStatus: "dummy-success",
       totalAmount: totalCartAmount,
-      orderDate: new Date(),
-      orderUpdateDate: new Date(),
-      paymentId: "dummy",
-      payerId: "dummy",
     };
     dispatch(createNewOrder(orderData)).then((data) => {
       if (data?.payload?.success) {
-        if (orderData.paymentMethod === "dummy") {
-          navigate("/shop/payment-success");
-        } else {
-          setIsPaymemntStart(true);
-        }
+        navigate("/shop/payment-success");
       } else {
-        setIsPaymemntStart(false);
+        toast({
+          title: "Failed to place order. Please try again.",
+          variant: "destructive",
+        });
       }
     });
-  }
-
-  if (approvalURL) {
-    window.location.href = approvalURL;
   }
 
   return (
@@ -118,10 +102,8 @@ function ShoppingCheckout() {
             </div>
           </div>
           <div className="mt-4 w-full">
-            <Button onClick={handleDummyCheckout} className="w-full">
-              {isPaymentStart
-                ? "Placing Order..."
-                : "Place Order (Dummy)"}
+            <Button onClick={handlePlaceOrder} className="w-full">
+              Place Order
             </Button>
           </div>
         </div>
