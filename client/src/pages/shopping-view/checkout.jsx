@@ -32,14 +32,14 @@ function ShoppingCheckout() {
   function handlePlaceOrder() {
     if (!cartItems?.items || cartItems.items.length === 0) {
       toast({
-        title: "Your cart is empty. Please add items to proceed",
+        title: "Your Cart Is Empty. Please Add Items To Proceed",
         variant: "destructive",
       });
       return;
     }
     if (currentSelectedAddress === null) {
       toast({
-        title: "Please select one address to proceed.",
+        title: "Please Select One Address To Proceed.",
         variant: "destructive",
       });
       return;
@@ -72,7 +72,7 @@ function ShoppingCheckout() {
         navigate("/shop/payment-success");
       } else {
         toast({
-          title: "Failed to place order. Please try again.",
+          title: "Failed To Place Order. Please Try Again.",
           variant: "destructive",
         });
       }

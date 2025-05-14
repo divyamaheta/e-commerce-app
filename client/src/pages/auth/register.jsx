@@ -41,10 +41,10 @@ function AuthRegister() {
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Create new account
+          Create New Account
         </h1>
         <p className="mt-2">
-          Already have an account
+          Already Have An Account
           <Link
             className="font-medium ml-2 text-primary hover:underline"
             to="/auth/login"
